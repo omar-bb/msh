@@ -10,6 +10,10 @@
 #define BUFFER_MAX_SIZE 1024
 #define COMM_AV 3 
 
+void execute_external_command(void) {
+    return 0; 
+}
+
 void parse_command(char *command) {
     char *internal_commands[COMM_AV] = {"cd", "exit", "help"};
     char **args = NULL;
