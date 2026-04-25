@@ -38,8 +38,68 @@ void builtin_help(void) {
   printf("  clear\n");
 }
 
-// function that handles the external commands that are not part of the built-in
-// msh commands
+// handle the cd internal command
+void builtin_cd(char **args, int argc) {
+  // cd accepts at most one argument
+  if (argc > 2) {
+    printf("cd: too many arguments\n");
+    return;
+  }
+
+  // if no path is given the shell goes to home
+  if (argc == 1) {
+    char *home = getenv("HOME");
+
+    if (home == NULL) {
+      printf("cd: HOME environment variable not set\n");
+      return;
+    }
+
+    if (chdir(home) == -1) {
+      perror("cd");
+    }
+
+    return;
+  }
+
+  // change the current directory to the given path
+  if (chdir(args[1]) == -1) {
+    perror("cd");
+  }
+}
+
+// handle the pwd internal command
+void builtin_pwd(char **args, int argc) {
+  char cwd[BUFFER_MAX_SIZE];
+
+  // pwd does not accept arguments
+  if (argc > 1) {
+    printf("pwd: too many arguments\n");
+    return;
+  }
+
+  // get the current working directory
+  if (getcwd(cwd, sizeof(cwd)) == NULL) {
+    perror("pwd");
+    return;
+  }
+
+  printf("%s\n", cwd);
+}
+
+// handle the exit internal command
+void builtin_exit(char **args, int argc) {
+  // exit does not accept arguments in this version
+  if (argc > 1) {
+    printf("exit: too many arguments\n");
+    return;
+  }
+
+  printf("Exiting mini shell...\n");
+  exit(EXIT_SUCCESS);
+}
+
+// execute commands that are not built into the shell
 void execute_external_command(char **args) {
   pid_t pid = fork();
   if (pid == 0) {
