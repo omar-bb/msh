@@ -17,7 +17,7 @@
 */
 
 #define BUFFER_MAX_SIZE 1024
-#define COMM_AV 3
+#define MAX_ARGS 64
 
 void builtin_help(void) {
   printf("Mini Shell Help\n");
