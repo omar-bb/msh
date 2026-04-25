@@ -190,22 +190,27 @@ void execute_command(char *command) {
 int main(void) {
   char buffer_inp[BUFFER_MAX_SIZE];
   char cwd[BUFFER_MAX_SIZE];
+
   while (1) {
+    // display the current directory in the prompt
     if (getcwd(cwd, sizeof(cwd)) != NULL) {
       printf("%s msh $ ", cwd);
     } else {
-      printf("getcwd error");
+      perror("getcwd");
+      printf("msh $ ");
     }
+
     fflush(stdout);
-    // use getline more convenient for dynamic buffers!
-    if (fgets(buffer_inp, BUFFER_MAX_SIZE, stdin)) {
-      buffer_inp[strcspn(buffer_inp, "\n")] = '\0';
-      // printf("command received: %s\n", buffer_inp);
-      parse_command(buffer_inp);
-      // printf("%s", buffer_inp);
-    } else {
-      printf("command failed!");
+
+    // read the user input
+    if (fgets(buffer_inp, sizeof(buffer_inp), stdin) == NULL) {
+      printf("\nExiting mini shell...\n");
+      break;
     }
+
+    // execute the entered command
+    execute_command(buffer_inp);
   }
+
   return 0;
 }
