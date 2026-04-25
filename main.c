@@ -102,14 +102,26 @@ void builtin_exit(char **args, int argc) {
 // execute commands that are not built into the shell
 void execute_external_command(char **args) {
   pid_t pid = fork();
+
+  // handle fork failure
+  if (pid < 0) {
+    perror("fork");
+    return;
+  }
+
+  // child process
   if (pid == 0) {
     execvp(args[0], args);
-    printf("execvp failed\n");
+
+    // this part is reached only if execvp fails
+    perror("execvp");
     exit(EXIT_FAILURE);
-  } else if (pid > 0) {
-    wait(NULL);
-  } else {
-    printf("fork failed\n");
+  }
+
+  // parent process waits for the child
+  int status;
+  if (waitpid(pid, &status, 0) == -1) {
+    perror("waitpid");
   }
 }
 
