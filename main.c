@@ -19,6 +19,7 @@
 #define BUFFER_MAX_SIZE 1024
 #define MAX_ARGS 64
 
+// display the shell help message
 void builtin_help(void) {
   printf("Mini Shell Help\n");
   printf("-----------------------------\n");
@@ -26,12 +27,15 @@ void builtin_help(void) {
   printf("  help           Display this help message\n");
   printf("  exit           Exit the shell\n");
   printf("  cd <dir>       Change current directory\n");
+  printf("  pwd            Display current directory\n");
   printf("\n");
   printf("Other commands are executed as external programs.\n");
   printf("Examples:\n");
   printf("  ls\n");
+  printf("  ls -l\n");
   printf("  cat main.c\n");
   printf("  echo hello\n");
+  printf("  clear\n");
 }
 
 // function that handles the external commands that are not part of the built-in
