@@ -125,61 +125,54 @@ void execute_external_command(char **args) {
   }
 }
 
-// function that parses the command and executes it
-void parse_command(char *command) {
-  // an array that stores the stripped command
-  char **args = NULL;
-  int count_args = 0;
+// split the command into arguments
+int parse_arguments(char *command, char **args) {
+  int argc = 0;
 
-  // strip the command into arguments
-  char *token;
-  char *t_command = malloc(strlen(command) + 1);
-  strcpy(t_command, command);
-  token = strtok(t_command, " ");
-  while (token != NULL) {
-    // reallocate the appropriate array size
-    args = realloc(args, sizeof(char *) * (count_args + 1));
-    if (!args) {
-      printf("realloc failed!");
-      exit(EXIT_FAILURE);
-    }
-    args[count_args] = strdup(token);
-    if (!args[count_args]) {
-      printf("realloc failed!");
-      exit(EXIT_FAILURE);
-    }
-    count_args++;
-    token = strtok(NULL, " ");
+  // split the command using spaces tabs and newlines
+  char *token = strtok(command, " \t\n");
+
+  while (token != NULL && argc < MAX_ARGS - 1) {
+    args[argc] = token;
+    argc++;
+
+    token = strtok(NULL, " \t\n");
   }
-  // add a NULL at the end for convenience
-  args = realloc(args, sizeof(char *) * (count_args + 1));
-  args[count_args] = NULL;
 
-  if (args[0]) {
-    if (strcmp(args[0], "cd") == 0) {
-      if (args[1] != NULL) {
-        if (chdir(args[1]) == -1) {
-          printf("cd: not a directory : %s\n", args[1]);
-        }
-      } else {
-        chdir("/");
-      }
-    } else if (strcmp(args[0], "exit") == 0) {
-      // free resources
-      for (size_t i = 0; i < count_args; i++)
-        free(args[i]);
-      free(args);
-      free(t_command);
-      // exit
-      exit(EXIT_SUCCESS);
-    } else if (strcmp(args[0], "help") == 0) {
-      if (args[1] == NULL) {
-        builtin_help();
-      } else {
-        printf("help: the help command doesn't accept arguments");
-      }
+  // execvp needs a null value at the end of the array
+  args[argc] = NULL;
+
+  return argc;
+}
+
+// parse and execute the command
+void execute_command(char *command) {
+  char *args[MAX_ARGS];
+
+  // get the command arguments
+  int argc = parse_arguments(command, args);
+
+  // ignore empty commands
+  if (argc == 0) {
+    return;
+  }
+
+  // cd command
+  if (strcmp(args[0], "cd") == 0) {
+    builtin_cd(args, argc);
+  }
+
+  // exit command
+  else if (strcmp(args[0], "exit") == 0) {
+    builtin_exit(args, argc);
+  }
+
+  // help command
+  else if (strcmp(args[0], "help") == 0) {
+    if (argc > 1) {
+      printf("help: too many arguments\n");
     } else {
-      execute_external_command(args);
+      builtin_help();
     }
   }
 
