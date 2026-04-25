@@ -176,11 +176,15 @@ void execute_command(char *command) {
     }
   }
 
-  // free resources
-  for (size_t i = 0; i < count_args; i++)
-    free(args[i]);
-  free(args);
-  free(t_command);
+  // pwd command
+  else if (strcmp(args[0], "pwd") == 0) {
+    builtin_pwd(args, argc);
+  }
+
+  // external command
+  else {
+    execute_external_command(args);
+  }
 }
 
 int main(void) {
