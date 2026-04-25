@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,10 +7,13 @@
 #include <unistd.h>
 
 /*
-- first problem faced : we need to implement from scratch the 3 internal
-commands cd, exit and help instead of using system() since it only modifies a
-shell child process instead of modifying my actual shell
-- when the clear command is called it gives a segmantation fault
+    mini shell in c
+
+    main features
+    - internal commands cd exit help and pwd
+    - external commands using fork and execvp
+    - command parsing using strtok
+    - basic error handling with perror
 */
 
 #define BUFFER_MAX_SIZE 1024
